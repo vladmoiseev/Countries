@@ -1,7 +1,6 @@
 package com.example.countries.controller;
 
 import com.example.countries.entity.City;
-import com.example.countries.entity.Country;
 import com.example.countries.exception.CityAlreadyExistException;
 import com.example.countries.exception.CityNotFoundException;
 import com.example.countries.exception.CountryNotFoundException;

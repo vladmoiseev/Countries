@@ -14,6 +14,7 @@ public class City {
     private Country country;
 
     public City(){
+        // No initialization logic needed for this constructor
     }
 
     public Long getId() {

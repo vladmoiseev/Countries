@@ -11,6 +11,7 @@ public class LanguageDTO {
     }
 
     public LanguageDTO() {
+        // No initialization logic needed for this constructor
     }
 
     public String getName() {
