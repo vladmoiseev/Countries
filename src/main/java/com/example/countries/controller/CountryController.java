@@ -1,9 +1,9 @@
 package com.example.countries.controller;
 
-import com.example.countries.entity.CountryEntity;
+import com.example.countries.entity.Country;
 import com.example.countries.exception.CountryAlreadyExistException;
 import com.example.countries.exception.CountryNotFoundException;
-import com.example.countries.model.Country;
+import com.example.countries.dto.CountryDTO;
 import com.example.countries.service.CountryService;
 
 import org.springframework.http.ResponseEntity;
@@ -24,10 +24,10 @@ public class CountryController {
     }
 
     @PostMapping
-    public ResponseEntity addCountry(@RequestBody CountryEntity country) {
+    public ResponseEntity<?> addCountry(@RequestBody Country country) {
         try {
-            countryService.add(country);
-            return ResponseEntity.ok("Страна успешно сохранена!");
+            countryService.addCountry(country);
+            return ResponseEntity.ok("Страна была успешно сохранена!");
         } catch (CountryAlreadyExistException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -36,9 +36,9 @@ public class CountryController {
     }
 
     @GetMapping
-    public ResponseEntity getCountryFromDb(@RequestParam(required = false) String name) {
+    public ResponseEntity<?> getCountry(@RequestParam(required = false) String name) {
         try {
-            return ResponseEntity.ok(countryService.getFromDb(name));
+            return ResponseEntity.ok(countryService.getCountry(name));
         } catch (CountryNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
@@ -49,7 +49,7 @@ public class CountryController {
     @GetMapping("/name")
     public ResponseEntity<?> getCountryByName(@RequestParam String name) {
         try {
-            List<Country> countries = countryService.getByCountryName(name);
+            List<CountryDTO> countries = countryService.getByCountryName(name);
             return ResponseEntity.ok(countries);
         } catch (CountryNotFoundException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -58,11 +58,25 @@ public class CountryController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteCountry(@PathVariable Long id){
+    @PutMapping
+    public ResponseEntity<?> updateCountry(@RequestParam String name, @RequestBody Country updatedCountry) {
         try {
-            countryService.delete(id);
-            return ResponseEntity.ok("Страна успешно удалена!");
+            countryService.updateCountry(name, updatedCountry);
+            return ResponseEntity.ok("Страна была успешно изменена");
+        } catch (CountryNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(ERROR_MESSAGE);
+        }
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteCountry(@RequestParam Long id) {
+        try {
+            countryService.deleteCountry(id);
+            return ResponseEntity.ok("Страна была успешно удалена");
+        } catch (CountryNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(ERROR_MESSAGE);
         }

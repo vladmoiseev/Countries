@@ -1,10 +1,10 @@
 package com.example.countries.service;
 
-import com.example.countries.entity.CountryEntity;
+import com.example.countries.entity.Country;
 import com.example.countries.exception.CountryAlreadyExistException;
 import com.example.countries.exception.CountryNotFoundException;
-import com.example.countries.model.Country;
-import com.example.countries.repository.CountryRepo;
+import com.example.countries.dto.CountryDTO;
+import com.example.countries.repository.CountryRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -23,33 +23,32 @@ import org.slf4j.LoggerFactory;
 @Service
 public class CountryService {
 
-    private final CountryRepo countryRepo;
+    private final CountryRepository countryRepository;
     private static final Logger logger = LoggerFactory.getLogger(CountryService.class);
+    private static final String COUNTRY_NOT_FOUND_STRING = "Страна не найдена";
 
     @Autowired
-    public CountryService(ObjectMapper objectMapper, CountryRepo countryRepo){
-        this.countryRepo = countryRepo;
+    public CountryService(ObjectMapper objectMapper, CountryRepository countryRepository){
+        this.countryRepository = countryRepository;
     }
 
-    public CountryEntity add(CountryEntity country) throws CountryAlreadyExistException {
-        List<CountryEntity> countries = countryRepo.findByName(country.getName());
-        if (!countries.isEmpty()) {
-            throw new CountryAlreadyExistException("Страна с таким название уже существует!");
+    public void addCountry(Country country) throws CountryAlreadyExistException {
+        if (countryRepository.findByName(country.getName()) != null) {
+            throw new CountryAlreadyExistException("Такая страна уже существует!");
         }
-        return countryRepo.save(country);
+        countryRepository.save(country);
     }
 
-    public List<Country> getFromDb(String name) throws CountryNotFoundException {
-        List<CountryEntity> countryList = countryRepo.findByName(name);
-        if (countryList.isEmpty()) {
-            throw new CountryNotFoundException("Страна с таким названием не была найдена!");
+    public CountryDTO getCountry(String name) throws CountryNotFoundException {
+        Country country = countryRepository.findByName(name);
+        if (country == null) {
+            throw new CountryNotFoundException(COUNTRY_NOT_FOUND_STRING);
         }
-        return countryList.stream()
-                .map(Country::toModel)
-                .toList();
+        return CountryDTO.toModel(country);
     }
 
-    public List<Country> getByCountryName(String countryName) throws CountryNotFoundException {
+
+    public List<CountryDTO> getByCountryName(String countryName) throws CountryNotFoundException {
         String apiUrl = "https://restcountries.com/v3.1/name/" + URLEncoder.encode(countryName, StandardCharsets.UTF_8);
 
         RestTemplate restTemplate = new RestTemplate();
@@ -64,11 +63,11 @@ public class CountryService {
             JsonNode jsonNode = mapper.readTree(jsonString);
 
             if (jsonNode.isArray() && jsonNode.size() > 0) {
-                List<Country> countries = new ArrayList<>();
+                List<CountryDTO> countries = new ArrayList<>();
                 for (JsonNode countryNode : jsonNode) {
-                    CountryEntity countryEntity = new CountryEntity(countryNode);
-                    countryEntity.setCapital(countryNode.get("capital").get(0).asText());
-                    countries.add(Country.toModel(countryEntity));
+                    Country country = new Country(countryNode);
+                    country.setCapital(countryNode.get("capital").get(0).asText());
+                    countries.add(CountryDTO.toModel(country));
                 }
                 return countries;
             } else {
@@ -76,13 +75,27 @@ public class CountryService {
                 throw new CountryNotFoundException("Страна с таким названием не была найдена!");
             }
         } catch (Exception e) {
-            logger.error("Ошибка при выполнении запроса", e);
-            throw new CountryNotFoundException("Произошла ошибка при выполнении запроса");
+            logger.error("Ошибка при выполнении запроса!", e);
+            throw new CountryNotFoundException("Произошла ошибка при выполнении запроса!");
         }
     }
 
-    public Long delete(Long id){
-        countryRepo.deleteById(id);
-        return id;
+    public void updateCountry(String name, Country country) throws CountryNotFoundException {
+        Country countryEntity = countryRepository.findByName(name);
+        if (countryEntity == null) {
+            throw new CountryNotFoundException(COUNTRY_NOT_FOUND_STRING);
+        }
+        countryEntity.setName(country.getName());
+        countryEntity.setCapital(country.getCapital());
+        countryRepository.save(countryEntity);
+    }
+
+    public void deleteCountry(Long id) throws CountryNotFoundException {
+        Country country = countryRepository.findById(id).orElse(null);
+        if (country != null) {
+            countryRepository.deleteById(id);
+        } else {
+            throw new CountryNotFoundException(COUNTRY_NOT_FOUND_STRING);
+        }
     }
 }
