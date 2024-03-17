@@ -46,6 +46,18 @@ public class CountryController {
         }
     }
 
+    @GetMapping("/with-language")
+    public ResponseEntity<?> getCountriesWithLanguage(@RequestParam Long languageId) {
+        try {
+            List<CountryDTO> countries = countryService.getCountriesWithLanguage(languageId);
+            return ResponseEntity.ok(countries);
+        } catch (CountryNotFoundException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
     @GetMapping("/name")
     public ResponseEntity<?> getCountryByName(@RequestParam String name) {
         try {
