@@ -44,6 +44,8 @@ public class CountryService {
             throw new CountryAlreadyExistException("Такая страна уже существует!");
         }
         countryRepository.save(country);
+
+        countryCache.clear();
     }
 
     public CountryDTO getCountry(String name) throws CountryNotFoundException {
@@ -122,12 +124,16 @@ public class CountryService {
         countryEntity.setName(country.getName());
         countryEntity.setCapital(country.getCapital());
         countryRepository.save(countryEntity);
+
+        countryCache.clear();
     }
 
     public void deleteCountry(Long id) throws CountryNotFoundException {
         Country country = countryRepository.findById(id).orElse(null);
         if (country != null) {
             countryRepository.deleteById(id);
+
+            countryCache.clear();
         } else {
             throw new CountryNotFoundException(COUNTRY_NOT_FOUND_STRING);
         }

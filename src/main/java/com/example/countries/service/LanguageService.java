@@ -1,5 +1,7 @@
 package com.example.countries.service;
 
+import com.example.countries.component.Cache;
+import com.example.countries.dto.CountryDTO;
 import com.example.countries.dto.LanguageDTO;
 import com.example.countries.entity.Country;
 import com.example.countries.entity.Language;
@@ -17,12 +19,14 @@ public class LanguageService {
 
     private final LanguageRepository languageRepository;
     private final CountryRepository countryRepository;
+    private final Cache<String, CountryDTO> countryCache;
     private static final String LANGUAGE_NOT_FOUND_STRING = "Язык не найден!";
 
     @Autowired
-    public LanguageService(LanguageRepository languageRepository, CountryRepository countryRepository) {
+    public LanguageService(LanguageRepository languageRepository, CountryRepository countryRepository, Cache<String, CountryDTO> countryCache) {
         this.languageRepository = languageRepository;
         this.countryRepository = countryRepository;
+        this.countryCache = countryCache;
     }
 
     @Transactional
@@ -45,6 +49,8 @@ public class LanguageService {
         }
 
         countryRepository.save(countryEntity);
+
+        countryCache.clear();
     }
 
     public LanguageDTO getLanguage(Long id) throws LanguageNotFoundException {
@@ -61,6 +67,8 @@ public class LanguageService {
         if (languageEntity != null) {
             languageEntity.setName(language.getName());
             languageRepository.save(languageEntity);
+
+            countryCache.clear();
         } else {
             throw new LanguageNotFoundException(LANGUAGE_NOT_FOUND_STRING);
         }
@@ -80,5 +88,7 @@ public class LanguageService {
         countryRepository.save(countryEntity);
         languageEntity.getCountryList().remove(countryEntity);
         languageRepository.save(languageEntity);
+
+        countryCache.clear();
     }
 }

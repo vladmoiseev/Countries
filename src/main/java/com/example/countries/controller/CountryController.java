@@ -6,8 +6,10 @@ import com.example.countries.exception.CountryNotFoundException;
 import com.example.countries.dto.CountryDTO;
 import com.example.countries.service.CountryService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 

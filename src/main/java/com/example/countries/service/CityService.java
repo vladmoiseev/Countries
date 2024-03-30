@@ -12,8 +12,6 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
-
 @Service
 public class CityService {
     private final CityRepository cityRepository;
