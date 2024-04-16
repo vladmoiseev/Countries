@@ -62,6 +62,28 @@ public class CountryController {
   }
 
   /**
+   * Обрабатывает POST запрос для добавления стран в большом количестве.
+   *
+   * @param countries Список стран для добавления
+   * @return ResponseEntity с информацией о статусе операции
+   */
+  @PostMapping("/bulk")
+  public ResponseEntity<?> addCountriesBulk(@RequestBody List<Country> countries) {
+    log.info("post-запрос для Country был вызван!");
+    try {
+      countryService.addCountriesBulk(countries);
+      log.info("Страны были успешно сохранены!");
+      return ResponseEntity.ok("Страны были успешно сохранены!");
+    } catch (CountryAlreadyExistException e) {
+      log.warn(e.getMessage());
+      return ResponseEntity.badRequest().body(e.getMessage());
+    } catch (Exception e) {
+      log.error("Произошла ошибка при добавлении стран", e);
+      return ResponseEntity.badRequest().body(ERROR_MESSAGE);
+    }
+  }
+
+  /**
    * Endpoint to retrieve a country by its name.
    *
    * @param name the name of the country to retrieve
@@ -94,27 +116,6 @@ public class CountryController {
     try {
       List<CountryDto> countries = countryService.getCountriesWithLanguage(languageId);
       log.info("Страна c языками была успешно получена!");
-      return ResponseEntity.ok(countries);
-    } catch (CountryNotFoundException e) {
-      throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
-    } catch (Exception e) {
-      return ResponseEntity.badRequest().body(ERROR_MESSAGE);
-    }
-  }
-
-  /**
-   * Endpoint to retrieve countries by name.
-   *
-   * @param name the name of the country
-   * @return ResponseEntity with the list of countries with the specified name, or error message if
-   *     any exception occurs
-   */
-  @GetMapping("/name")
-  public ResponseEntity<?> getCountryByName(@RequestParam String name) {
-    log.info("get_countries_by_name-запрос был вызван!");
-    try {
-      List<CountryDto> countries = countryService.getByCountryName(name);
-      log.info("Страна была успешно получена!");
       return ResponseEntity.ok(countries);
     } catch (CountryNotFoundException e) {
       throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());

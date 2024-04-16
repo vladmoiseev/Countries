@@ -6,18 +6,17 @@ import com.example.countries.entity.Country;
 import com.example.countries.exception.CountryAlreadyExistException;
 import com.example.countries.exception.CountryNotFoundException;
 import com.example.countries.repository.CountryRepository;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 /**
  * Service class for managing countries.
@@ -59,6 +58,43 @@ public class CountryService {
 
     countryCache.clear();
   }
+
+  /**
+   * Добавляет список стран в базу данных, игнорируя те, которые уже существуют.
+   *
+   * @param countries Список стран для добавления
+   * @throws CountryAlreadyExistException Если некоторые страны уже существуют в базе данных
+   */
+  public void addCountriesBulk(List<Country> countries) throws CountryAlreadyExistException {
+    Set<String> existingCountryNames = new HashSet<>();
+    for (Country country : countryRepository.findAll()) {
+      existingCountryNames.add(country.getName());
+    }
+
+    List<Country> newCountries = countries.stream()
+        .filter(country -> !existingCountryNames.contains(country.getName()))
+        .collect(Collectors.toMap(Country::getName, country -> country,
+            (country1, country2) -> country1))
+        .values()
+        .stream()
+        .collect(Collectors.toList());
+
+    List<Country> savedCountries = new ArrayList<>();
+    countryRepository.saveAll(newCountries).forEach(savedCountries::add);
+    int countSavedCountries = savedCountries.size();
+
+    if (countSavedCountries == 0) {
+      throw new CountryAlreadyExistException("Все страны из списка уже есть в базе.");
+    } else if (newCountries.size() == countSavedCountries) {
+      System.out.println("Успешно добавлено " + countSavedCountries + " новых стран.");
+    } else {
+      System.out.println("Ошибка при добавлении новых стран. Добавлено " + countSavedCountries
+          + " из " + newCountries.size() + " стран.");
+      throw new RuntimeException("Ошибка при добавлении новых стран.");
+    }
+  }
+
+
 
   /**
    * Retrieves a country by its name.
@@ -105,60 +141,13 @@ public class CountryService {
   }
 
   /**
-   * Retrieves a list of countries by the country name.
-   *
-   * @param countryName the name of the country to search for
-   * @return the list of DTO representations of countries
-   * @throws CountryNotFoundException if no countries with the specified name are found
-   */
-  public List<CountryDto> getByCountryName(String countryName) throws CountryNotFoundException {
-    List<CountryDto> cachedCountries = countryCache.getList(countryName);
-    if (cachedCountries != null) {
-      return cachedCountries;
-    }
-
-    String apiUrl = "https://restcountries.com/v3.1/name/"
-        + URLEncoder.encode(countryName, StandardCharsets.UTF_8);
-
-    RestTemplate restTemplate = new RestTemplate();
-
-    try {
-      String jsonString = restTemplate.getForObject(apiUrl, String.class);
-
-      logger.info("JSON-ответ от {}: {}", apiUrl, jsonString);
-
-      ObjectMapper mapper = new ObjectMapper();
-
-      JsonNode jsonNode = mapper.readTree(jsonString);
-
-      if (jsonNode.isArray() && jsonNode.size() > 0) {
-        List<CountryDto> countries = new ArrayList<>();
-        for (JsonNode countryNode : jsonNode) {
-          Country country = new Country(countryNode);
-          country.setCapital(countryNode.get("capital").get(0).asText());
-          countries.add(CountryDto.toModel(country));
-        }
-        countryCache.putList(countryName, countries);
-        return countries;
-      } else {
-        logger.warn("Получен пустой массив данных от запроса: {}", apiUrl);
-        throw new CountryNotFoundException("Страна с таким названием не была найдена!");
-      }
-    } catch (Exception e) {
-      logger.error("Ошибка при выполнении запроса!", e);
-      throw new CountryNotFoundException("Произошла ошибка при выполнении запроса!");
-    }
-  }
-
-
-  /**
    * Updates an existing country.
    *
    * @param name    the name of the country to update
    * @param country the updated country data
    * @throws CountryNotFoundException if the country with the specified name is not found
    */
-  public void updateCountry(String name, Country country) throws CountryNotFoundException {
+  public CountryDto updateCountry(String name, Country country) throws CountryNotFoundException {
     Country countryEntity = countryRepository.findByName(name);
     if (countryEntity == null) {
       throw new CountryNotFoundException(COUNTRY_NOT_FOUND_STRING);
@@ -168,6 +157,7 @@ public class CountryService {
     countryRepository.save(countryEntity);
 
     countryCache.clear();
+    return null;
   }
 
   /**

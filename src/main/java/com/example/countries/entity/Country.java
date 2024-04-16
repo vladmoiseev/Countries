@@ -40,7 +40,13 @@ public class Country {
    * No initialization logic needed for this constructor.
    */
   public Country() {
+    // No initialization logic needed for this constructor
   }
+
+  public Country(String name) {
+    this.name = name;
+  }
+
 
   /**
    * Constructs a new Country instance from a JSON node.
