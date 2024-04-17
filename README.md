@@ -1,4 +1,4 @@
-# Dishes API Application
+# Countries API Application
 
 Этот репозиторий содержит простое приложение REST API, которое предоставляет информацию о столице страны по ее названию.
 
