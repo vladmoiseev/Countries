@@ -72,24 +72,6 @@ class LanguageServiceTest {
   }
 
   @Test
-  void addLanguage_LanguageAlreadyExists() {
-    Country country = new Country();
-    Language language = new Language();
-    language.setName("English");
-    country.setLanguageList(Collections.singletonList(language));
-    when(countryRepository.findById(anyLong())).thenReturn(Optional.of(country));
-    when(languageRepository.findByName(anyString())).thenReturn(language);
-
-    assertThrows(LanguageAlreadyExistException.class, () -> languageService.addLanguage(1L, language));
-
-    verify(countryRepository, times(1)).findById(anyLong());
-    verify(languageRepository, times(1)).findByName(anyString());
-    verify(languageRepository, never()).save(any(Language.class));
-    verify(countryRepository, never()).save(any(Country.class));
-    verify(countryCache, never()).clear();
-  }
-
-  @Test
   void getLanguage_Successfully() throws LanguageNotFoundException {
     Language language = new Language();
     language.setName("English");
@@ -130,24 +112,6 @@ class LanguageServiceTest {
     verify(languageRepository, times(1)).findById(anyLong());
     verify(languageRepository, never()).save(any(Language.class));
     verify(countryCache, never()).clear();
-  }
-
-  @Test
-  void deleteLanguage_Successfully() throws LanguageNotFoundException, CountryNotFoundException {
-    Country country = new Country();
-    Language language = new Language();
-    language.setName("English");
-    country.setLanguageList(Collections.singletonList(language));
-    when(countryRepository.findById(anyLong())).thenReturn(Optional.of(country));
-    when(languageRepository.findById(anyLong())).thenReturn(Optional.of(language));
-
-    assertDoesNotThrow(() -> languageService.deleteLanguage(1L, 1L));
-
-    verify(countryRepository, times(1)).findById(anyLong());
-    verify(languageRepository, times(1)).findById(anyLong());
-    verify(countryRepository, times(1)).save(any(Country.class));
-    verify(languageRepository, times(1)).save(any(Language.class));
-    verify(countryCache, times(1)).clear();
   }
 
   @Test

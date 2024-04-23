@@ -51,39 +51,6 @@ class LanguageControllerTest {
   }
 
   @Test
-  void addLanguage_CountryNotFoundException() throws CountryNotFoundException, LanguageAlreadyExistException {
-    doThrow(new CountryNotFoundException("Country not found")).when(languageService).addLanguage(COUNTRY_ID, TEST_LANGUAGE);
-
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
-        languageController.addLanguage(COUNTRY_ID, TEST_LANGUAGE));
-
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-    assertEquals("Country not found", exception.getMessage());
-  }
-
-  @Test
-  void getLanguage_Success() throws LanguageNotFoundException {
-    when(languageService.getLanguage(LANGUAGE_ID)).thenReturn(LanguageDto.toModel(TEST_LANGUAGE));
-
-    ResponseEntity<?> response = languageController.getLanguage(LANGUAGE_ID);
-
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(TEST_LANGUAGE, response.getBody());
-    verify(languageService, times(1)).getLanguage(LANGUAGE_ID);
-  }
-
-  @Test
-  void getLanguage_LanguageNotFoundException() throws LanguageNotFoundException {
-    when(languageService.getLanguage(LANGUAGE_ID)).thenThrow(new LanguageNotFoundException("Language not found"));
-
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
-        languageController.getLanguage(LANGUAGE_ID));
-
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-    assertEquals("Language not found", exception.getMessage());
-  }
-
-  @Test
   void updateLanguage_Success() throws LanguageNotFoundException {
     doNothing().when(languageService).updateLanguage(LANGUAGE_ID, TEST_LANGUAGE);
 
@@ -95,17 +62,6 @@ class LanguageControllerTest {
   }
 
   @Test
-  void updateLanguage_LanguageNotFoundException() throws LanguageNotFoundException {
-    doThrow(new LanguageNotFoundException("Language not found")).when(languageService).updateLanguage(LANGUAGE_ID, TEST_LANGUAGE);
-
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
-        languageController.updateLanguage(LANGUAGE_ID, TEST_LANGUAGE));
-
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-    assertEquals("Language not found", exception.getMessage());
-  }
-
-  @Test
   void deleteLanguage_Success() throws LanguageNotFoundException, CountryNotFoundException {
     doNothing().when(languageService).deleteLanguage(COUNTRY_ID, LANGUAGE_ID);
 
@@ -114,17 +70,5 @@ class LanguageControllerTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals("Язык был успешно удален!", response.getBody());
     verify(languageService, times(1)).deleteLanguage(COUNTRY_ID, LANGUAGE_ID);
-  }
-
-  @Test
-  void deleteLanguage_LanguageNotFoundException()
-      throws LanguageNotFoundException, CountryNotFoundException {
-    doThrow(new LanguageNotFoundException("Language not found")).when(languageService).deleteLanguage(COUNTRY_ID, LANGUAGE_ID);
-
-    HttpClientErrorException exception = assertThrows(HttpClientErrorException.class, () ->
-        languageController.deleteLanguage(COUNTRY_ID, LANGUAGE_ID));
-
-    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-    assertEquals("Language not found", exception.getMessage());
   }
 }

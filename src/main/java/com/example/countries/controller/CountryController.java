@@ -5,6 +5,7 @@ import com.example.countries.entity.Country;
 import com.example.countries.exception.CountryAlreadyExistException;
 import com.example.countries.exception.CountryNotFoundException;
 import com.example.countries.service.CountryService;
+import com.example.countries.service.RequestCounterService;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ public class CountryController {
 
   private static final String ERROR_MESSAGE = "Произошла ошибка!";
   private final CountryService countryService;
+  final RequestCounterService requestCounterService;
   private final Logger log = LoggerFactory.getLogger(CountryController.class);
 
   /**
@@ -36,8 +38,9 @@ public class CountryController {
    *
    * @param countryService an instance of CountryService to handle country-related operations
    */
-  public CountryController(CountryService countryService) {
+  public CountryController(CountryService countryService, RequestCounterService requestCounterService) {
     this.countryService = countryService;
+    this.requestCounterService = requestCounterService;
   }
 
   /**
@@ -48,7 +51,7 @@ public class CountryController {
    *     message if any exception occurs
    */
   @PostMapping
-  public ResponseEntity<String> addCountry(@RequestBody Country country) {
+  public ResponseEntity<?> addCountry(@RequestBody Country country) {
     log.info("post-запрос для Country был вызван!");
     try {
       countryService.addCountry(country);
@@ -68,7 +71,7 @@ public class CountryController {
    * @return ResponseEntity с информацией о статусе операции
    */
   @PostMapping("/bulk")
-  public ResponseEntity<String> addCountriesBulk(@RequestBody List<Country> countries) {
+  public ResponseEntity<?> addCountriesBulk(@RequestBody List<Country> countries) {
     log.info("post-запрос для Country был вызван!");
     try {
       countryService.addCountriesBulk(countries);
@@ -91,9 +94,10 @@ public class CountryController {
    *     not found or any exception occurs
    */
   @GetMapping
-  public ResponseEntity<String> getCountry(@RequestParam(required = false) String name) {
+  public ResponseEntity<?> getCountry(@RequestParam(required = false) String name) {
     log.info("get_country-запрос для Country был вызван!");
     try {
+      requestCounterService.increment();
       log.info("Страна была успешно получена!");
       return ResponseEntity.ok(countryService.getCountry(name));
     } catch (CountryNotFoundException e) {
@@ -101,6 +105,12 @@ public class CountryController {
     } catch (Exception e) {
       return ResponseEntity.badRequest().body(ERROR_MESSAGE);
     }
+  }
+
+  @GetMapping("/getRequestCount")
+  public String getRequestCount() {
+    int requestCount = requestCounterService.getCount();
+    return "Total number of requests: " + requestCount;
   }
 
   /**
@@ -111,7 +121,7 @@ public class CountryController {
    *     if any exception occurs
    */
   @GetMapping("/with-language")
-  public ResponseEntity<String> getCountriesWithLanguage(@RequestParam Long languageId) {
+  public ResponseEntity<?> getCountriesWithLanguage(@RequestParam Long languageId) {
     log.info("get_countries_with_language-запрос был вызван!");
     try {
       List<CountryDto> countries = countryService.getCountriesWithLanguage(languageId);
@@ -133,7 +143,7 @@ public class CountryController {
    *     message if the country is not found or any exception occurs
    */
   @PutMapping
-  public ResponseEntity<String> updateCountry(@RequestParam String name,
+  public ResponseEntity<?> updateCountry(@RequestParam String name,
                                          @RequestBody Country updatedCountry) {
     log.info("put-запрос для Country был вызван!");
     try {
@@ -155,7 +165,7 @@ public class CountryController {
    *     or error message if the country is not found or any exception occurs
    */
   @DeleteMapping
-  public ResponseEntity<String> deleteCountry(@RequestParam Long id) {
+  public ResponseEntity<?> deleteCountry(@RequestParam Long id) {
     log.info("delete-запрос для Country был вызван!");
     try {
       countryService.deleteCountry(id);

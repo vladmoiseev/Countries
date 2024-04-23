@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class CityDtoTest {
+class CityDtoTest {
 
   @Test
-  public void testToModel() {
+  void testToModel() {
     City city = new City();
     city.setName("TestCity");
 
@@ -19,7 +19,7 @@ public class CityDtoTest {
   }
 
   @Test
-  public void testGetName() {
+  void testGetName() {
     CityDto cityDto = new CityDto();
     cityDto.setName("TestCity");
 
@@ -29,7 +29,7 @@ public class CityDtoTest {
   }
 
   @Test
-  public void testSetName() {
+  void testSetName() {
     CityDto cityDto = new CityDto();
 
     cityDto.setName("TestCity");

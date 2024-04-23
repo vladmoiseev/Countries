@@ -49,7 +49,7 @@ public class CityController {
    *     if any exception occurs
    */
   @PostMapping
-  public ResponseEntity<String> addCity(@RequestParam Long countryId, @RequestBody City city) {
+  public ResponseEntity<?> addCity(@RequestParam Long countryId, @RequestBody City city) {
     log.info("post-запрос для City был вызван!");
     try {
       cityService.addCity(countryId, city);
@@ -70,7 +70,7 @@ public class CityController {
    *     found or any exception occurs
    */
   @GetMapping
-  public ResponseEntity<String> getCity(@RequestParam Long id) {
+  public ResponseEntity<?> getCity(@RequestParam Long id) {
     log.info("get-запрос для City был вызван!");
     try {
       log.info("Город был успешно получен!");
@@ -91,7 +91,7 @@ public class CityController {
    *     message if the city is not found or any exception occurs
    */
   @PutMapping
-  public ResponseEntity<String> updateCity(@RequestParam Long id, @RequestBody City updatedCity) {
+  public ResponseEntity<?> updateCity(@RequestParam Long id, @RequestBody City updatedCity) {
     log.info("put-запрос для City был вызван!");
     try {
       cityService.updateCity(id, updatedCity);
@@ -112,7 +112,7 @@ public class CityController {
    *     message if the city is not found or any exception occurs
    */
   @DeleteMapping
-  public ResponseEntity<String> deleteCity(@RequestParam Long id) {
+  public ResponseEntity<?> deleteCity(@RequestParam Long id) {
     log.info("delete-запрос для City был вызван!");
     try {
       cityService.deleteCity(id);

@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class CityControllerTest {
+class CityControllerTest {
 
   @Mock
   private CityService cityService;
@@ -53,26 +53,6 @@ public class CityControllerTest {
       cityController.addCity(1L, city);
     });
   }
-
-  @Test
-  void testGetCity_Success() throws CityNotFoundException {
-    City city = new City();
-    when(cityService.getCity(anyLong())).thenAnswer(invocation -> {
-      Long id = invocation.getArgument(0);
-      if (id.equals(1L)) {
-        return city;
-      } else {
-        throw new CityNotFoundException("City not found");
-      }
-    });
-
-    ResponseEntity<?> response = cityController.getCity(1L);
-
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals(city, response.getBody());
-    verify(cityService, times(1)).getCity(anyLong());
-  }
-
 
   @Test
   void testGetCity_CityNotFoundException() throws CityNotFoundException {

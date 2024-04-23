@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CacheTest {
+class CacheTest {
 
   private Cache<String, String> cache;
 
@@ -17,13 +17,13 @@ public class CacheTest {
   }
 
   @Test
-  public void testPutAndGet() {
+  void testPutAndGet() {
     cache.put("key1", "value1");
     assertEquals("value1", cache.get("key1"));
   }
 
   @Test
-  public void testPutAndGetList() {
+  void testPutAndGetList() {
     List<String> valueList = new ArrayList<>();
     valueList.add("value1");
     valueList.add("value2");
@@ -32,20 +32,20 @@ public class CacheTest {
   }
 
   @Test
-  public void testContainsKey() {
+  void testContainsKey() {
     cache.put("key3", "value3");
     assertTrue(cache.containsKey("key3"));
   }
 
   @Test
-  public void testRemove() {
+  void testRemove() {
     cache.put("key4", "value4");
     cache.remove("key4");
     assertNull(cache.get("key4"));
   }
 
   @Test
-  public void testClear() {
+  void testClear() {
     cache.put("key5", "value5");
     cache.clear();
     assertNull(cache.get("key5"));

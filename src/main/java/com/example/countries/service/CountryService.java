@@ -12,11 +12,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Service class for managing countries.
@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 @Service
 @Component
 public class CountryService {
-  private final ObjectMapper objectMapper;
   private final CountryRepository countryRepository;
 
   private final Cache<String, CountryDto> countryCache;
@@ -39,7 +38,6 @@ public class CountryService {
   @Autowired
   public CountryService(ObjectMapper objectMapper, CountryRepository countryRepository,
                         Cache<String, CountryDto> countryCache) {
-    this.objectMapper = objectMapper;
     this.countryRepository = countryRepository;
     this.countryCache = countryCache;
   }
@@ -71,13 +69,11 @@ public class CountryService {
       existingCountryNames.add(country.getName());
     }
 
-    List<Country> newCountries = countries.stream()
+    List<Country> newCountries = new ArrayList<>(countries.stream()
         .filter(country -> !existingCountryNames.contains(country.getName()))
         .collect(Collectors.toMap(Country::getName, country -> country,
             (country1, country2) -> country1))
-        .values()
-        .stream()
-        .collect(Collectors.toList());
+        .values());
 
     List<Country> savedCountries = new ArrayList<>();
     countryRepository.saveAll(newCountries).forEach(savedCountries::add);
@@ -86,15 +82,12 @@ public class CountryService {
     if (countSavedCountries == 0) {
       throw new CountryAlreadyExistException("Все страны из списка уже есть в базе.");
     } else if (newCountries.size() == countSavedCountries) {
-      System.out.println("Успешно добавлено " + countSavedCountries + " новых стран.");
+      logger.info("Успешно добавлено {} новых стран.", countSavedCountries);
     } else {
-      System.out.println("Ошибка при добавлении новых стран. Добавлено " + countSavedCountries
-          + " из " + newCountries.size() + " стран.");
+      logger.error("Ошибка при добавлении новых стран. Добавлено {} из {} стран.", countSavedCountries, newCountries.size());
       throw new RuntimeException("Ошибка при добавлении новых стран.");
     }
   }
-
-
 
   /**
    * Retrieves a country by its name.

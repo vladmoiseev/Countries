@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class LanguageDtoTest {
+class LanguageDtoTest {
 
   @Test
-  public void testToModel() {
+  void testToModel() {
     Language language = new Language();
     language.setName("TestLanguage");
 
@@ -19,7 +19,7 @@ public class LanguageDtoTest {
   }
 
   @Test
-  public void testGetName() {
+  void testGetName() {
     LanguageDto languageDto = new LanguageDto();
     languageDto.setName("TestLanguage");
 
@@ -29,7 +29,7 @@ public class LanguageDtoTest {
   }
 
   @Test
-  public void testSetName() {
+  void testSetName() {
     LanguageDto languageDto = new LanguageDto();
 
     languageDto.setName("TestLanguage");

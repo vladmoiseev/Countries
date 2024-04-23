@@ -49,7 +49,7 @@ public class LanguageController {
    *     message if any exception occurs
    */
   @PostMapping
-  public ResponseEntity<String> addLanguage(@RequestParam Long countryId,
+  public ResponseEntity<?> addLanguage(@RequestParam Long countryId,
                                        @RequestBody Language language) {
     log.info("post-запрос для Language был вызван!");
     try {
@@ -71,7 +71,7 @@ public class LanguageController {
    *     is not found or any exception occurs
    */
   @GetMapping
-  public ResponseEntity<String> getLanguage(@RequestParam Long id) {
+  public ResponseEntity<?> getLanguage(@RequestParam Long id) {
     log.info("get-запрос для Language был вызван!");
     try {
       log.info("Язык был успешно получен!");
@@ -92,7 +92,7 @@ public class LanguageController {
    *     message if the language is not found or any exception occurs
    */
   @PutMapping
-  public ResponseEntity<String> updateLanguage(@RequestParam Long id,
+  public ResponseEntity<?> updateLanguage(@RequestParam Long id,
                                           @RequestBody Language updatedLanguage) {
     log.info("put-запрос для Language был вызван!");
     try {
@@ -115,7 +115,7 @@ public class LanguageController {
    *     message if the language is not found or any exception occurs
    */
   @DeleteMapping
-  public ResponseEntity<String> deleteLanguage(@RequestParam Long countryId,
+  public ResponseEntity<?> deleteLanguage(@RequestParam Long countryId,
                                           @RequestParam Long languageId) {
     log.info("delete-запрос для Language был вызван!");
     try {

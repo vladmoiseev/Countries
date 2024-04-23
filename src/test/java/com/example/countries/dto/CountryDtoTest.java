@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class CountryDtoTest {
+class CountryDtoTest {
 
   @Test
-  public void testToModel() {
+  void testToModel() {
     Country country = new Country();
     country.setName("TestCountry");
     country.setCapital("TestCapital");
@@ -21,7 +21,7 @@ public class CountryDtoTest {
   }
 
   @Test
-  public void testGetName() {
+  void testGetName() {
     CountryDto countryDto = new CountryDto();
     countryDto.setName("TestCountry");
 
@@ -31,7 +31,7 @@ public class CountryDtoTest {
   }
 
   @Test
-  public void testSetName() {
+  void testSetName() {
     CountryDto countryDto = new CountryDto();
 
     countryDto.setName("TestCountry");
@@ -40,7 +40,7 @@ public class CountryDtoTest {
   }
 
   @Test
-  public void testGetCapital() {
+  void testGetCapital() {
     CountryDto countryDto = new CountryDto();
     countryDto.setCapital("TestCapital");
 
@@ -50,7 +50,7 @@ public class CountryDtoTest {
   }
 
   @Test
-  public void testSetCapital() {
+  void testSetCapital() {
     CountryDto countryDto = new CountryDto();
 
     countryDto.setCapital("TestCapital");
