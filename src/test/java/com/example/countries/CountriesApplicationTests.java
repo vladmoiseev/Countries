@@ -8,5 +8,6 @@ class CountriesApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// No initialization logic needed for this constructor
 	}
 }
