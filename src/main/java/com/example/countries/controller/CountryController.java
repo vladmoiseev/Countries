@@ -11,8 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,6 +53,7 @@ public class CountryController {
    *     message if any exception occurs
    */
   @PostMapping
+  @CrossOrigin
   public ResponseEntity<?> addCountry(@RequestBody Country country) {
     log.info("post-запрос для Country был вызван!");
     try {
@@ -71,6 +74,7 @@ public class CountryController {
    * @return ResponseEntity с информацией о статусе операции
    */
   @PostMapping("/bulk")
+  @CrossOrigin
   public ResponseEntity<?> addCountriesBulk(@RequestBody List<Country> countries) {
     log.info("post-запрос для Country был вызван!");
     try {
@@ -91,9 +95,10 @@ public class CountryController {
    *
    * @param name the name of the country to retrieve
    * @return ResponseEntity with the retrieved country if found, or error message if the country is
-   *     not found or any exception occurs
+   * not found or any exception occurs
    */
   @GetMapping
+  @CrossOrigin
   public ResponseEntity<?> getCountry(@RequestParam(required = false) String name) {
     log.info("get_country-запрос для Country был вызван!");
     try {
@@ -121,6 +126,7 @@ public class CountryController {
    *     if any exception occurs
    */
   @GetMapping("/with-language")
+  @CrossOrigin
   public ResponseEntity<?> getCountriesWithLanguage(@RequestParam Long languageId) {
     log.info("get_countries_with_language-запрос был вызван!");
     try {
@@ -143,6 +149,7 @@ public class CountryController {
    *     message if the country is not found or any exception occurs
    */
   @PutMapping
+  @CrossOrigin
   public ResponseEntity<?> updateCountry(@RequestParam String name,
                                          @RequestBody Country updatedCountry) {
     log.info("put-запрос для Country был вызван!");
@@ -157,18 +164,12 @@ public class CountryController {
     }
   }
 
-  /**
-   * Endpoint to delete an existing country by its ID.
-   *
-   * @param id the ID of the country to delete
-   * @return ResponseEntity with success message if the country is deleted successfully,
-   *     or error message if the country is not found or any exception occurs
-   */
   @DeleteMapping
-  public ResponseEntity<?> deleteCountry(@RequestParam Long id) {
+  @CrossOrigin
+  public ResponseEntity<?> deleteCountry(@RequestParam String name) {
     log.info("delete-запрос для Country был вызван!");
     try {
-      countryService.deleteCountry(id);
+      countryService.deleteCountryByName(name);
       log.info("Страна была успешно удалена!");
       return ResponseEntity.ok("Страна была успешно удалена");
     } catch (CountryNotFoundException e) {

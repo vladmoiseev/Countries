@@ -153,17 +153,10 @@ public class CountryService {
     return null;
   }
 
-  /**
-   * Deletes a country by its ID.
-   *
-   * @param id the ID of the country to delete
-   * @throws CountryNotFoundException if the country with the specified ID is not found
-   */
-  public void deleteCountry(Long id) throws CountryNotFoundException {
-    Country country = countryRepository.findById(id).orElse(null);
+  public void deleteCountryByName(String name) throws CountryNotFoundException {
+    Country country = countryRepository.findByName(name);
     if (country != null) {
-      countryRepository.deleteById(id);
-
+      countryRepository.delete(country);
       countryCache.clear();
     } else {
       throw new CountryNotFoundException(COUNTRY_NOT_FOUND_STRING);

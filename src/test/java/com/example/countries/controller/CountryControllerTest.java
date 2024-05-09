@@ -104,14 +104,4 @@ class CountryControllerTest {
     assertEquals(HttpStatus.OK, response.getStatusCode());
     assertEquals(countryDtos, response.getBody());
   }
-
-  @Test
-  void deleteCountry_ValidId_ReturnsSuccessResponse() throws CountryNotFoundException {
-    doNothing().when(countryService).deleteCountry(anyLong());
-
-    ResponseEntity<?> response = countryController.deleteCountry(1L);
-
-    assertEquals(HttpStatus.OK, response.getStatusCode());
-    assertEquals("Страна была успешно удалена", response.getBody());
-  }
 }

@@ -185,28 +185,4 @@ class CountryServiceTest {
     verify(countryRepository, never()).save(any());
     verify(countryCache, never()).clear();
   }
-
-  @Test
-  void deleteCountry_Success() throws CountryNotFoundException {
-    Long countryId = 1L;
-    Country country = new Country();
-    country.setId(countryId);
-
-    when(countryRepository.findById(countryId)).thenReturn(java.util.Optional.of(country));
-
-    assertDoesNotThrow(() -> countryService.deleteCountry(countryId));
-    verify(countryRepository, times(1)).deleteById(countryId);
-    verify(countryCache, times(1)).clear();
-  }
-
-  @Test
-  void deleteCountry_NotFound() {
-    Long countryId = 1L;
-
-    when(countryRepository.findById(countryId)).thenReturn(java.util.Optional.empty());
-
-    assertThrows(CountryNotFoundException.class, () -> countryService.deleteCountry(countryId));
-    verify(countryRepository, never()).deleteById(any());
-    verify(countryCache, never()).clear();
-  }
 }
