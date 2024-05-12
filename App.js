@@ -210,6 +210,18 @@ function App() {
         }
     };
 
+    const getCountriesWithLanguage = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8080/countries/with-language?languageId=${languageId}`);
+            console.log(response.data);
+            setCountries(response.data);
+            setStep('result');
+            setError(null);
+        } catch (error) {
+            setError(error.response?.data || 'An error occurred');
+        }
+    };
+
     return (
         <Container>
             <HeaderContainer>
@@ -223,6 +235,7 @@ function App() {
                         <Button onClick={() => setStep('update')}>Update Country</Button>
                         <Button onClick={() => setStep('delete')}>Delete Country</Button>
                         <Button onClick={() => setStep('getLanguage')}>Get Language</Button>
+                        <Button onClick={() => setStep('getCountriesWithLanguage')}>Get Country With Language</Button>
                     </ButtonContainer>
                 </>
             )}
@@ -257,6 +270,12 @@ function App() {
                 <>
                     <Input type="text" value={languageId} onChange={(e) => setLanguageId(e.target.value)} placeholder="Enter language ID" />
                     <Button onClick={handleGetLanguage}>Get Language</Button>
+                </>
+            )}
+            {step === 'getCountriesWithLanguage' && (
+                <>
+                    <Input type="text" value={languageId} onChange={(e) => setLanguageId(e.target.value)} placeholder="Enter language ID" />
+                    <Button onClick={getCountriesWithLanguage}>Get Country With Language</Button>
                 </>
             )}
             {step === 'result' && (
